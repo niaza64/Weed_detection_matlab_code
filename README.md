@@ -17,12 +17,12 @@ The code is implemented in MATLAB R2021a. The main file is named "Code.mlx".
 
 The code consists of the following steps:
 
-  Creation of imageDatastore and pixelLabelDatastore objects for the image and label datasets, respectively.
-  Splitting the dataset into training and validation sets.
-  Data augmentation using random patch extraction.
-  Defining the deep learning model architecture using convolutional and transposed convolutional layers.
-  Training the model using the training data and validating it using the validation data.
-  Saving the trained model which can then used by Matlab GUI.
+  - Creation of imageDatastore and pixelLabelDatastore objects for the image and label datasets, respectively.
+  - Splitting the dataset into training and validation sets.
+  - Data augmentation using random patch extraction.
+  - Defining the deep learning model architecture using convolutional and transposed convolutional layers.
+  - Training the model using the training data and validating it using the validation data.
+  - Saving the trained model which can then used by Matlab GUI.
   
 Usage:
 To run the code, open the file "Code.mlx" in MATLAB and run it. The output will be the trained model saved in the current directory.
