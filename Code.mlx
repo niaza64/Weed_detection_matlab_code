@@ -1,0 +1,97 @@
+imds =
+imageDatastore('D:\STUDY\fyp\dataset\resize_images'
+);
+classNames = ["maize" "weeds" "soil"];
+pixelLabelID = [1 2 3];
+pxds =
+pixelLabelDatastore('D:\STUDY\fyp\dataset\resize_la
+bels',classNames,pixelLabelID);
+[imdsTrain, imdsVal, pxdsTrain, pxdsVal] =
+xyz(imds,pxds,classes,labelIDs)
+
+0er = imageDataAugmenter('RandRotation',[0
+90],'RandXReflection',true)
+patchdstrain =
+randomPatchExtractionDatastore(imdsTrain,pxdsTrain,
+[100 100], ...
+'DataAugmentation',augmenter)
+augmenter = imageDataAugmenter('RandRotation',[0
+90],'RandXReflection',true)
+patchdsval =
+randomPatchExtractionDatastore(imdsVal,pxdsVal,[100
+100], ...
+'DataAugmentation',augmenter)
+minibatch = preview(patchds);
+numFilters = 64;
+filterSize = 3;
+numClasses = 3;
+layers = [
+
+32 | P a g e
+imageInputLayer([100 100 3])
+
+convolution2dLayer(filterSize,numFilters,'Padding',
+1)
+reluLayer()
+maxPooling2dLayer(2,'Stride',2)
+convolution2dLayer(filterSize,numFilters,'Padding',
+1)
+reluLayer()
+
+transposedConv2dLayer(4,numFilters,'Stride',2,'Crop
+ping',1);
+convolution2dLayer(1,numClasses);
+softmaxLayer()
+pixelClassificationLayer()
+]
+opts = trainingOptions('sgdm', ...
+'InitialLearnRate',1e-3, ...
+'MaxEpochs',100,...
+'Plots','training-progress',...
+'ValidationData',patchdsval,...
+'MiniBatchSize',16,....
+'ValidationPatience',10);
+trainingData = pixelLabelImageDatastore(imds,pxds);
+net_maize = trainNetwork(patchdstrain,layers,opts);
+
+33 | P a g e
+function [imdsTrain, imdsVal, pxdsTrain, pxdsVal] =
+xyz(imds,pxds,classes,labelIDs)
+
+% Set initial random state for example
+reproducibility.
+rng(0);
+numFiles = numel(imds.Files);
+shuffledIndices = randperm(numFiles);
+
+% Use 60% of the images for training.
+numTrain = round(0.80 * numFiles);
+trainingIdx = shuffledIndices(1:numTrain);
+
+% Usfe 20% of the images for validation
+numVal = round(0.20 * numFiles);
+valIdx =
+shuffledIndices(numTrain+1:numTrain+numVal);
+
+% Create image datastores for training and test.
+trainingImages = imds.Files(trainingIdx);
+valImages = imds.Files(valIdx);
+
+imdsTrain = imageDatastore(trainingImages);
+
+34 | P a g e
+imdsVal = imageDatastore(valImages);
+
+% Extract class and label IDs info.
+
+% Create pixel label datastores for training and
+test.
+trainingLabels = pxds.Files(trainingIdx);
+valLabels = pxds.Files(valIdx);
+
+pxdsTrain = pixelLabelDatastore(trainingLabels,
+classes, labelIDs);
+pxdsVal = pixelLabelDatastore(valLabels, classes,
+labelIDs);
+
+end
